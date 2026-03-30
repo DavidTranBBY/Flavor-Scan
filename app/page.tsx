@@ -1,12 +1,12 @@
-import IntroDoors from "@/components/ui/IntroDoors"
+import IntroPixel from "@/components/ui/IntroPixel"
 
 export default function HomePage() {
   return (
     <main>
-      <IntroDoors />
+      <IntroPixel />
 
-      <section className="min-h-screen flex items-center justify-center">
-        <h1 className="text-4xl font-bold">Hello World</h1>
+      <section className="min-h-screen">
+        {/* your landing page */}
       </section>
     </main>
   )

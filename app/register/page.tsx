@@ -1,63 +1,76 @@
-"use client"
-import { useState } from "react"
-import Link from "next/link"
+'use client';
+
+import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
+
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
+
 export default function RegisterPage() {
-    return(
-        <div className="grid min-h-screen place-items-center bg-gray-100 px-4">
-            <div className="w-full max-w-md rounded-xl bg-white p-6 shadow">
-                <h2 className="mb-6 text-center text-2xl font-bold">Register</h2>
-                <form className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            className="mt-1 w-full rounded-md border p-2"
-                            placeholder="example@gmail.com"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Re-enter Email
-                        </label>
-                        <input
-                            type="email"
-                            className="mt-1 w-full rounded-md border p-2"
-                            placeholder="example@gmail.com"
-                        />
+    const router = useRouter();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            className="mt-1 w-full rounded-md border p-2"
-                            placeholder="Enter your password"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Re-enter Password
-                        </label>
-                        <input
-                            type="password"
-                            className="mt-1 w-full rounded-md border p-2"
-                            placeholder="Re-enter your password"
-                        />
+    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
 
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full rounded-md bg-black px-3 py-2 text-white hover:bg-gray-800"
-                    >
-                        Register
-                    </button>
+        try {
+            const { error } = await supabase.auth.signUp({
+                email,
+                password,
+            });
 
-                </form>
-            </div>
+            if (error) throw error;
+
+            router.push('/login');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Registration failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <form onSubmit={handleRegister} className="bg-white p-8 rounded shadow w-96">
+                <h1 className="text-2xl font-bold mb-6">Register</h1>
+                
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-2 mb-4 border rounded"
+                    required
+                />
+                
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-2 mb-6 border rounded"
+                    required
+                />
+                
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                >
+                    {loading ? 'Registering...' : 'Register'}
+                </button>
+            </form>
         </div>
-    )
+    );
 }

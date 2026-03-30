@@ -1,5 +1,6 @@
 "use client"
 
+import PixelTransitionButton from "@/components/ui/PixelTransitionButton"
 import Link from "next/link"
 import { useState } from "react"
 import { pixel } from "@/lib/fonts"
@@ -50,8 +51,12 @@ export function Header() {
         </div>
 
         {/* Mobile menu */}
-        {menuOpen && (
-          <div className="flex flex-col gap-3 border-t py-4 md:hidden">
+        <div
+          className={`overflow-hidden transition-all duration-500 ease-in-out md:hidden ${
+            menuOpen ? "max-h-64" : "max-h-0"
+          }`}
+        >
+          <div className="flex flex-col gap-3 border-t py-4">
             <Link href="/features" className={`hover:text-gray-600 ${pixel.className}`}>
               Features
             </Link>
@@ -69,7 +74,7 @@ export function Header() {
               </button>
             </Link>
           </div>
-        )}
+        </div>
       </div>
     </header>
   )
