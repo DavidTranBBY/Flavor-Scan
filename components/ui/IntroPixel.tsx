@@ -83,16 +83,17 @@ export default function IntroPixel() {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black"
+      className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[var(--fs-bg)]"
     >
       <h1
         ref={textRef}
-        className="absolute z-10 text-4xl font-bold uppercase tracking-[0.3em] text-white md:text-6xl"
+        className="absolute z-10 text-4xl font-black uppercase tracking-[0.24em] text-[var(--fs-text)] md:text-6xl"
       >
-        Flavor Scan
+        FlavorScan
       </h1>
 
       <div
+        aria-hidden="true"
         className="absolute inset-0 grid"
         style={{
           gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,

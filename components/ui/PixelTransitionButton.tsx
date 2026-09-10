@@ -57,14 +57,14 @@ export default function PixelTransitionButton({
     <>
       <button
         onClick={handleClick}
-        className="rounded-md bg-black px-4 py-2 text-white"
+        className="fs-button-primary"
       >
         {children}
       </button>
 
       <div
         ref={overlayRef}
-        className="pointer-events-none fixed inset-0 z-[999] grid bg-black opacity-0"
+        className="pointer-events-none fixed inset-0 z-[999] grid bg-[var(--fs-bg)] opacity-0"
         style={{
           gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
           gridTemplateRows: `repeat(${ROWS}, minmax(0, 1fr))`,

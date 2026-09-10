@@ -44,8 +44,13 @@ export default function CameraScanner() {
         videoRef.current.srcObject = stream;
       }
     } catch (err) {
-      console.error(err);
-      setError("Could not access camera.");
+      const message =
+        err instanceof DOMException && err.name === "NotAllowedError"
+          ? "Camera access denied. Please allow camera permissions in your browser settings."
+          : err instanceof DOMException && err.name === "NotFoundError"
+            ? "No camera found on this device."
+            : "Could not access camera.";
+      setError(message);
     }
   };
 
@@ -96,13 +101,13 @@ export default function CameraScanner() {
       });
 
       if (!res.ok) {
-        throw new Error("Scan failed.");
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error || `Scan failed (${res.status}).`);
       }
 
       const data = await res.json();
       setResult(data);
     } catch (err) {
-      console.error(err);
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
@@ -114,23 +119,24 @@ export default function CameraScanner() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center max-w-xl rounded-2xl border p-4 space-y-4">
-      <div className="aspect-video overflow-hidden rounded-xl bg-black">
+    <div className="flex w-full max-w-xl flex-col items-center space-y-5 rounded-[2rem] border border-[var(--fs-border)] bg-[var(--fs-surface)] p-4 text-[var(--fs-text)] shadow-[0_30px_100px_var(--fs-shadow)] backdrop-blur-3xl sm:p-5">
+      <div className="aspect-video w-full overflow-hidden rounded-[1.5rem] border border-[var(--fs-border)] bg-[var(--fs-bg)]">
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
+          aria-label="Camera feed for food scanning"
           className="h-full w-full object-cover"
         />
       </div>
 
       <canvas ref={canvasRef} className="hidden" />
 
-      <div className="flex gap-2">
+      <div className="grid w-full gap-2 sm:grid-cols-3">
         <button
           onClick={startCamera}
-          className="rounded-lg bg-black px-4 py-2 text-white"
+          className="fs-button-secondary"
         >
           Open
         </button>
@@ -138,36 +144,36 @@ export default function CameraScanner() {
         <button
           onClick={captureAndAnalyze}
           disabled={loading}
-          className="rounded-lg bg-green-600 px-4 py-2 text-white disabled:opacity-50"
+          className="fs-button-primary disabled:pointer-events-none disabled:opacity-60"
         >
           {loading ? "Analyzing..." : "Capture"}
         </button>
 
         <button
           onClick={stopCamera}
-          className="rounded-lg bg-red-500 px-4 py-2 text-white"
+          className="rounded-full border border-[var(--fs-border)] bg-[var(--fs-surface)] px-4 py-3 text-sm font-semibold text-[var(--fs-muted)] transition duration-300 hover:-translate-y-px hover:border-[var(--fs-border-strong)] hover:text-[var(--fs-text)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--fs-bg)]"
         >
           Stop
         </button>
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="w-full rounded-2xl border border-red-300/20 bg-red-300/5 px-4 py-3 text-sm text-red-100">{error}</p>}
 
       {result && (
-        <div className="rounded-xl border p-4 space-y-3">
+        <div className="w-full space-y-4 rounded-[1.5rem] border border-[var(--fs-border)] bg-[var(--fs-surface)] p-4">
           <div>
-            <h2 className="text-lg font-semibold">{result.meal_name}</h2>
-            <p>Total calories: {result.total_estimated_calories}</p>
-            <p>Confidence: {(result.confidence * 100).toFixed(0)}%</p>
+            <h2 className="text-xl font-semibold tracking-[-0.04em] text-[var(--fs-text)]">{result.meal_name}</h2>
+            <p className="mt-2 text-sm text-[var(--fs-muted)]">Total calories: {result.total_estimated_calories}</p>
+            <p className="text-sm text-[var(--fs-muted)]">Confidence: {(result.confidence * 100).toFixed(0)}%</p>
           </div>
 
           <div className="space-y-2">
             {result.items.map((item, index) => (
-              <div key={index} className="rounded-lg border p-3">
-                <p className="font-medium">{item.name}</p>
-                <p>Portion: {item.estimated_portion}</p>
-                <p>Calories: {item.estimated_calories}</p>
-                <p>
+              <div key={`item-${index}`} className="rounded-2xl border border-[var(--fs-border)] bg-[var(--fs-surface)] p-4">
+                <p className="font-semibold text-[var(--fs-text)]">{item.name}</p>
+                <p className="mt-2 text-sm text-[var(--fs-muted)]">Portion: {item.estimated_portion}</p>
+                <p className="text-sm text-[var(--fs-muted)]">Calories: {item.estimated_calories}</p>
+                <p className="text-sm text-[var(--fs-muted)]">
                   P: {item.protein_g}g | C: {item.carbs_g}g | F: {item.fat_g}g
                 </p>
               </div>
@@ -176,10 +182,10 @@ export default function CameraScanner() {
 
           {result.notes.length > 0 && (
             <div>
-              <p className="font-medium">Notes</p>
-              <ul className="list-disc pl-5">
+              <p className="font-semibold text-[var(--fs-text)]">Notes</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--fs-muted)]">
                 {result.notes.map((note, index) => (
-                  <li key={index}>{note}</li>
+                  <li key={`note-${index}`}>{note}</li>
                 ))}
               </ul>
             </div>

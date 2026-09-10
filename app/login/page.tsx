@@ -1,72 +1,70 @@
+"use client"
 
-'use client';
-import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
-
-
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
+import { editorial } from "@/lib/fonts"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const router = useRouter();
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    e.preventDefault()
+    setLoading(true)
+    setError("")
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      setError(error.message);
-      setLoading(false);
+      setError(error.message)
+      setLoading(false)
     } else {
-      router.push('/dashboard');
+      setLoading(false)
+      router.push("/dashboard")
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow">
-        <h1 className="text-2xl font-bold mb-6">Login</h1>
-        {error && <div className="text-red-600 mb-4">{error}</div>}
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full mb-4 p-2 border rounded"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full mb-4 p-2 border rounded"
-            required
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+    <main className="fs-page fs-grid-bg">
+      <section className="fs-container grid min-h-[calc(100vh-4rem)] place-items-center py-16">
+        <div className="fs-card w-full max-w-md p-6 sm:p-8">
+          <p className="fs-eyebrow mb-5">Lorem</p>
+          <h1 className={`${editorial.className} mb-4 text-5xl font-semibold leading-none tracking-[-0.055em] text-[var(--fs-text)]`}>
+            Log in
+          </h1>
+          <p className="mb-8 text-sm leading-7 text-[var(--fs-muted)]">
+            Sample Text
+          </p>
+
+          {error && <div className="mb-5 border border-red-300/20 bg-red-300/5 px-4 py-3 text-sm text-red-100">{error}</div>}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="fs-input"
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="fs-input"
+              required
+            />
+            <button type="submit" disabled={loading} className="fs-button-primary w-full disabled:pointer-events-none disabled:opacity-50">
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+  )
 }

@@ -1,8 +1,19 @@
-export default function AboutPage() {
-    return(
-        <div className ="flex items-center justify-center flex-col h-screen">
-            <h2 className="text-4xl font-bold">About</h2>
+"use client"
 
-        </div>
-    )
+import Link from "next/link"
+import { useRef } from "react"
+import { useGSAP } from "@gsap/react"
+import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+gsap.registerPlugin(ScrollTrigger)
+
+export default function AboutPage() {
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  return (
+    <div ref={rootRef} className="fs-page fs-grid-bg">
+      
+    </div>
+  )
 }

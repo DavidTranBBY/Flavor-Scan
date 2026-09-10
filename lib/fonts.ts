@@ -1,5 +1,5 @@
 // lib/fonts.ts
-import { Inter, Space_Grotesk, Press_Start_2P, Pixelify_Sans } from "next/font/google";
+import { Cormorant_Garamond, Inter, Pixelify_Sans } from "next/font/google";
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -7,10 +7,11 @@ export const inter = Inter({
   variable: "--font-inter",
 });
 
-export const space = Space_Grotesk({
+export const editorial = Cormorant_Garamond({
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
   display: "swap",
-  variable: "--font-space",
+  variable: "--font-editorial",
 });
 
 export const pixel = Pixelify_Sans({

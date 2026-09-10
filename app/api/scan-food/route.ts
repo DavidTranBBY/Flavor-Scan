@@ -1,8 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+const apiKey = process.env.GEMINI_API_KEY;
+
+if (!apiKey) {
+  throw new Error("Missing GEMINI_API_KEY environment variable");
+}
+
+const ai = new GoogleGenAI({ apiKey });
 
 const calorieSchema = {
   type: "object",
@@ -71,7 +75,7 @@ export async function POST(request: Request) {
     const base64Data = match[2];
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-flash-lite-preview",
+      model: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite-preview",
       contents: [
         {
           inlineData: {
